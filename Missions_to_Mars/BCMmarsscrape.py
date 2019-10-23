@@ -15,7 +15,7 @@ def init_browser():
 
 def scrape ():
     browser = init_browser()
-    mars_info = {}
+    marsinfo = {}
 
     # Visit the web page
     mars_url = 'https://mars.nasa.gov/news/'
@@ -61,7 +61,7 @@ def scrape ():
     marsfacts_df.columns = ['Parameter', 'Values']
     marsfacts_df.set_index(['Parameter'])
 
-    marsfacts_html = marsfacts_df.to_html()
+    marsfacts_html = marsfacts_df.to_html(index=False)
     marsfacts_html = marsfacts_html.replace("\n", "")
     marsfacts_html
 
@@ -69,7 +69,7 @@ def scrape ():
     browser.visit(hemisphere_url)
     time.sleep(2)
     #Getting the base url
-    #hemisphere_base_url = 'https://astrogeology.usgs.gov'
+    # hemisphere_base_url = 'https://astrogeology.usgs.gov'
     
 
     # scrape images of Mars' hemispheres from the USGS site
@@ -106,16 +106,15 @@ def scrape ():
         hemisphere_results.append(hemisphere_dict)
 
     # create a dictionary containing the collected data for later use in flask app
-    mars_info={"news_title":news_title,
+    marsinfo={"news_title":news_title,
             "news_paragraph":news_paragraph,
-            "featuredimage_url":fullimgurl,
-            "tweet_url":base_url,
+            "fullimgurl":fullimgurl,
             "marsweather":marsweather,
-            "marsfacts":marsfacts_url,
-            "hemisphereimage_urls":hemisphere_results  
+            "marsfacts_html":marsfacts_html,
+            "hemisphere_results":hemisphere_results  
             }
     #Close the browser after scraping
     browser.quit()
 
     #Return data
-    return mars_info
+    return marsinfo

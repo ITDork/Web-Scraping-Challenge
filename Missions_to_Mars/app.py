@@ -1,5 +1,6 @@
 from flask import Flask, render_template, redirect
 import pymongo
+from pymongo import MongoClient
 import BCMmarsscrape
 import os
 
@@ -9,26 +10,25 @@ client = pymongo.MongoClient(conn)
 db = client["mars_db"]
 collection = db["marsdata"]
 
+# Create an instance of Flask app
 app = Flask(__name__)
 
-# mongo = pymongo(app, url="mongodb://localhost:27017/marsinfo_db")
-
-@app.route('/')
+@app.route("/")
 def index():
-    mars_info = db.collection.find_one()
-    return render_template('index.html', marsinfo=mars_info)
+    marsinfo = db.collection.find_one()
+    return render_template("index.html", marsinfo=marsinfo)
 
 
-@app.route('/scrape')
+@app.route("/scrape")
 def scrape():
-    mars = db.collection
-    data = BCMmarsscrape.scrape()
-    mars.update(
+    marsinfo = db.collection
+    mars_data = BCMmarsscrape.scrape()
+    marsinfo.update(
         {},
-        data,
-        insert=True)
-    
-    return redirect('/', code=302)
+        mars_data,
+        upsert=True
+    )
+    return redirect("http://127.0.0.1:5000/", code=302)
 
 
 if __name__ == "__main__":
